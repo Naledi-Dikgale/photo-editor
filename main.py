@@ -92,7 +92,7 @@ def get_current_directory():
         file_list.addItem(filenames)
 
 
-class Editor[]:
+class Editor:
   def __init__(self):
     self.image = None
     self.original = None
@@ -120,7 +120,6 @@ def Show_image(self, path):
   image = image.scaled(w, h, Qt.KeepAspectRatio)
   picture_box.setPixmap(image)
   picture_box.show()
-
 
 def displayImage():
   if file_list.currentItem() >= 0:
