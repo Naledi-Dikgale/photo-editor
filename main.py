@@ -1,6 +1,8 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QListWidget, QComboBox, QVBoxLayout, QHBoxLayout
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QListWidget, QComboBox, QVBoxLayout, QHBoxLayout, QFileDialog
 from PyQt5.QtCore import Qt
-# from PIL import Image, ImageEnhance, ImageFilter  
+import os
+from PyQt5.QtGui import QPixmap
+from PIL import Image, ImageEnhance, ImageFilter 
 
 App = QApplication([])
 main_window = QWidget()
@@ -67,14 +69,70 @@ master_layout.addLayout(col2, 80)
 
 main_window.setLayout(master_layout)
 
+# Functionality
+working_directory = ""
+
+# filter filex
+def filter(files, extensions):
+    results = []
+    for file in files:
+        for extension in extensions:
+            if file.endswith(extension):
+                results.append(file)
+    return results
+
+# get current directory
+def get_current_directory():
+    global working_directory
+    working_directory = QFileDialog.getExistingDirectory()
+    extensions = [".jpg", ".jpeg", ".png", ".gif", "svg"]
+    filenames = filter(os.listdir(working_directory), extensions)
+    file_list.clear()
+    for file in filenames:
+        file_list.addItem(filenames)
 
 
+class Editor[]:
+  def __init__(self):
+    self.image = None
+    self.original = None
+    self.filename = None
+    self.save_folder = "edits"
+
+def LoadImage(self, filename):
+    self.filename = filename
+    fullname = os.path.join(working_directory, filename)
+    self.image = Image.open(fullname)
+    self.original = self.image.copy()
+
+def SaveImage(self):
+  path = os.path.join(working_directory, self.save_folder)
+  if not(os.path.exists(path) or os.path.isdir(path)):
+    os.mkdir(path)
+
+  fullname = os.path.join(path, self.filename)
+  self.image.save(fullname)
+
+def Show_image(self, path):
+  picture_box.hide()
+  image = QPixmap(path)
+  w, h = picture_box.width(), picture_box.height()
+  image = image.scaled(w, h, Qt.KeepAspectRatio)
+  picture_box.setPixmap(image)
+  picture_box.show()
 
 
+def displayImage():
+  if file_list.currentItem() >= 0:
+    filename = file_list.currentItem().text()
+    main.LoadImage(filename)
+    main.Show_image(os.path.join(working_directory, main.filename))
+    
 
+main = Editor()
 
-
-
+btn_folder.clicked.connect(get_current_directory)
+file_list.currentRowChanged.connect(displayImage)
 
 main_window.show()
 App.exec_()
