@@ -51,28 +51,49 @@ filter_box.addItem("Gray")
 picture_box = QLabel("Picture")
 
 # Layout
-layout = QGridLayout()
+main_layout = QHBoxLayout()
 
-layout.addWidget(btn_folder, 0, 0, 1, 2)
-layout.addWidget(file_list, 1, 0, 5, 2)
-layout.addWidget(filter_box, 0, 2, 1, 4)
-layout.addWidget(btn_left, 1, 2)
-layout.addWidget(btn_right, 1, 3)
-layout.addWidget(mirror, 1, 4)
-layout.addWidget(sharpness, 1, 5)
-layout.addWidget(brightness, 2, 2)
-layout.addWidget(contrast, 2, 3)
-layout.addWidget(saturation, 2, 4)
-layout.addWidget(blur, 2, 5)
-layout.addWidget(rotate, 3, 2)
-layout.addWidget(crop, 3, 3)
-layout.addWidget(gray, 3, 4)
-layout.addWidget(filter_slider, 4, 2, 1, 4)
-layout.addWidget(picture_box, 1, 6, 5, 6)
-layout.addWidget(undo, 6, 6)
-layout.addWidget(save, 6, 7)
+# Left side layout
+left_layout = QVBoxLayout()
+left_layout.addWidget(btn_folder)
+left_layout.addWidget(file_list)
 
-main_window.setLayout(layout)
+# Right side layout
+right_layout = QVBoxLayout()
+
+# Top part of the right side
+top_right_layout = QGridLayout()
+top_right_layout.addWidget(filter_box, 0, 0, 1, 4)
+top_right_layout.addWidget(btn_left, 1, 0)
+top_right_layout.addWidget(btn_right, 1, 1)
+top_right_layout.addWidget(mirror, 1, 2)
+top_right_layout.addWidget(sharpness, 1, 3)
+top_right_layout.addWidget(brightness, 2, 0)
+top_right_layout.addWidget(contrast, 2, 1)
+top_right_layout.addWidget(saturation, 2, 2)
+top_right_layout.addWidget(blur, 2, 3)
+top_right_layout.addWidget(rotate, 3, 0)
+top_right_layout.addWidget(crop, 3, 1)
+top_right_layout.addWidget(gray, 3, 2)
+top_right_layout.addWidget(filter_slider, 4, 0, 1, 4)
+
+# Bottom part of the right side
+bottom_right_layout = QVBoxLayout()
+bottom_right_layout.addWidget(picture_box)
+bottom_buttons_layout = QHBoxLayout()
+bottom_buttons_layout.addWidget(undo)
+bottom_buttons_layout.addWidget(save)
+bottom_right_layout.addLayout(bottom_buttons_layout)
+
+# Combine top and bottom right layouts
+right_layout.addLayout(top_right_layout)
+right_layout.addLayout(bottom_right_layout)
+
+# Combine left and right layouts
+main_layout.addLayout(left_layout, 1)
+main_layout.addLayout(right_layout, 4)
+
+main_window.setLayout(main_layout)
 
 # Apply theme
 App.setStyleSheet("""
