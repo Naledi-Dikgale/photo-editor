@@ -27,6 +27,12 @@ gray = QPushButton("Black and White")
 undo = QPushButton("Undo")
 save = QPushButton("Save")
 
+# Slider for adjusting filter values
+filter_slider = QSlider(Qt.Horizontal)
+filter_slider.setMinimum(1)
+filter_slider.setMaximum(10)
+filter_slider.setValue(5)
+
 # Dropdown menu
 filter_box = QComboBox()
 filter_box.addItem("Original")
@@ -61,41 +67,53 @@ layout.addWidget(blur, 2, 5)
 layout.addWidget(rotate, 3, 2)
 layout.addWidget(crop, 3, 3)
 layout.addWidget(gray, 3, 4)
-layout.addWidget(undo, 4, 2)
-layout.addWidget(save, 4, 3)
+layout.addWidget(filter_slider, 4, 2, 1, 4)
 layout.addWidget(picture_box, 1, 6, 5, 6)
+layout.addWidget(undo, 6, 6)
+layout.addWidget(save, 6, 7)
 
 main_window.setLayout(layout)
 
 # Apply theme
 App.setStyleSheet("""
     QWidget {
-        background-color: white;
-        color: blue;
+        background-color: #f0f0f0;
+        color: #333;
     }
     QPushButton {
-        background-color: blue;
-        color: black;
-        border: 1px solid blue;
+        background-color: #007bff;
+        color: white;
+        border: 1px solid #007bff;
+        border-radius: 5px;
+        padding: 5px 10px;
+    }
+    QPushButton:hover {
+        background-color: #0056b3;
     }
     QListWidget {
         background-color: white;
-        color: blue;
-        border: 1px solid blue;
+        color: #333;
+        border: 1px solid #ccc;
     }
     QComboBox {
         background-color: white;
-        color: blue;
-        border: 1px solid blue;
+        color: #333;
+        border: 1px solid #ccc;
     }
     QLabel {
         background-color: white;
-        color: blue;
+        color: #333;
+        border: 1px solid #ccc;
+        padding: 10px;
+    }
+    QSlider {
+        background-color: #f0f0f0;
     }
 """)
 
 # Functionality
 working_directory = ""
+history = []
 
 # filter files
 def filter(files, extensions):
@@ -130,6 +148,8 @@ class Editor:
         fullname = os.path.join(working_directory, filename)
         self.image = Image.open(fullname)
         self.original = self.image.copy()
+        history.clear()
+        history.append(self.image.copy())
         print(f"Loaded image: {fullname}")
 
     def SaveImage(self):
@@ -153,18 +173,21 @@ class Editor:
     def RotateLeft(self):
         if self.image:
             self.image = self.image.rotate(90, expand=True)
+            history.append(self.image.copy())
             path = self.SaveImage()
             self.Show_image(path)
 
     def RotateRight(self):
         if self.image:
             self.image = self.image.rotate(-90, expand=True)
+            history.append(self.image.copy())
             path = self.SaveImage()
             self.Show_image(path)
 
     def MirrorImage(self):
         if self.image:
             self.image = self.image.transpose(Image.FLIP_LEFT_RIGHT)
+            history.append(self.image.copy())
             path = self.SaveImage()
             self.Show_image(path)
 
@@ -172,6 +195,7 @@ class Editor:
         if self.image:
             enhancer = ImageEnhance.Sharpness(self.image)
             self.image = enhancer.enhance(value)
+            history.append(self.image.copy())
             path = self.SaveImage()
             self.Show_image(path)
 
@@ -179,6 +203,7 @@ class Editor:
         if self.image:
             enhancer = ImageEnhance.Brightness(self.image)
             self.image = enhancer.enhance(value)
+            history.append(self.image.copy())
             path = self.SaveImage()
             self.Show_image(path)
 
@@ -186,6 +211,7 @@ class Editor:
         if self.image:
             enhancer = ImageEnhance.Contrast(self.image)
             self.image = enhancer.enhance(value)
+            history.append(self.image.copy())
             path = self.SaveImage()
             self.Show_image(path)
 
@@ -193,36 +219,42 @@ class Editor:
         if self.image:
             enhancer = ImageEnhance.Color(self.image)
             self.image = enhancer.enhance(value)
+            history.append(self.image.copy())
             path = self.SaveImage()
             self.Show_image(path)
 
     def ApplyBlur(self, value):
         if self.image:
             self.image = self.image.filter(ImageFilter.GaussianBlur(value))
+            history.append(self.image.copy())
             path = self.SaveImage()
             self.Show_image(path)
 
     def RotateImage(self, value):
         if self.image:
             self.image = self.image.rotate(value, expand=True)
+            history.append(self.image.copy())
             path = self.SaveImage()
             self.Show_image(path)
 
     def CropImage(self, left, top, right, bottom):
         if self.image:
             self.image = self.image.crop((left, top, right, bottom))
+            history.append(self.image.copy())
             path = self.SaveImage()
             self.Show_image(path)
 
     def ConvertToGray(self):
         if self.image:
             self.image = self.image.convert("L")
+            history.append(self.image.copy())
             path = self.SaveImage()
             self.Show_image(path)
 
     def Undo(self):
-        if self.original:
-            self.image = self.original.copy()
+        if len(history) > 1:
+            history.pop()
+            self.image = history[-1].copy()
             path = self.SaveImage()
             self.Show_image(path)
 
@@ -239,12 +271,12 @@ file_list.currentRowChanged.connect(displayImage)
 btn_left.clicked.connect(lambda: main.RotateLeft())
 btn_right.clicked.connect(lambda: main.RotateRight())
 mirror.clicked.connect(lambda: main.MirrorImage())
-sharpness.clicked.connect(lambda: main.AdjustSharpness(2.0))
-brightness.clicked.connect(lambda: main.AdjustBrightness(1.5))
-contrast.clicked.connect(lambda: main.AdjustContrast(1.5))
-saturation.clicked.connect(lambda: main.AdjustSaturation(1.5))
-blur.clicked.connect(lambda: main.ApplyBlur(2.0))
-rotate.clicked.connect(lambda: main.RotateImage(45))
+sharpness.clicked.connect(lambda: main.AdjustSharpness(filter_slider.value()))
+brightness.clicked.connect(lambda: main.AdjustBrightness(filter_slider.value()))
+contrast.clicked.connect(lambda: main.AdjustContrast(filter_slider.value()))
+saturation.clicked.connect(lambda: main.AdjustSaturation(filter_slider.value()))
+blur.clicked.connect(lambda: main.ApplyBlur(filter_slider.value()))
+rotate.clicked.connect(lambda: main.RotateImage(filter_slider.value() * 10))
 crop.clicked.connect(lambda: main.CropImage(100, 100, 400, 400))
 gray.clicked.connect(lambda: main.ConvertToGray())
 undo.clicked.connect(lambda: main.Undo())
