@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QListWidget, QComboBox, QVBoxLayout, QHBoxLayout, QFileDialog, QGridLayout
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QListWidget, QComboBox, QVBoxLayout, QHBoxLayout, QFileDialog, QGridLayout, QSlider, QInputDialog
 from PyQt5.QtCore import Qt
 import os
 from PyQt5.QtGui import QPixmap
@@ -24,6 +24,8 @@ blur = QPushButton("Blur")
 rotate = QPushButton("Rotate")
 crop = QPushButton("Crop")
 gray = QPushButton("Black and White")
+undo = QPushButton("Undo")
+save = QPushButton("Save")
 
 # Dropdown menu
 filter_box = QComboBox()
@@ -59,6 +61,8 @@ layout.addWidget(blur, 2, 5)
 layout.addWidget(rotate, 3, 2)
 layout.addWidget(crop, 3, 3)
 layout.addWidget(gray, 3, 4)
+layout.addWidget(undo, 4, 2)
+layout.addWidget(save, 4, 3)
 layout.addWidget(picture_box, 1, 6, 5, 6)
 
 main_window.setLayout(layout)
@@ -164,53 +168,48 @@ class Editor:
             path = self.SaveImage()
             self.Show_image(path)
 
-    def AdjustSharpness(self):
+    def AdjustSharpness(self, value):
         if self.image:
             enhancer = ImageEnhance.Sharpness(self.image)
-            self.image = enhancer.enhance(2.0)  # Increase sharpness
+            self.image = enhancer.enhance(value)
             path = self.SaveImage()
             self.Show_image(path)
 
-    def AdjustBrightness(self):
+    def AdjustBrightness(self, value):
         if self.image:
             enhancer = ImageEnhance.Brightness(self.image)
-            self.image = enhancer.enhance(1.5)  # Increase brightness
+            self.image = enhancer.enhance(value)
             path = self.SaveImage()
             self.Show_image(path)
 
-    def AdjustContrast(self):
+    def AdjustContrast(self, value):
         if self.image:
             enhancer = ImageEnhance.Contrast(self.image)
-            self.image = enhancer.enhance(1.5)  # Increase contrast
+            self.image = enhancer.enhance(value)
             path = self.SaveImage()
             self.Show_image(path)
 
-    def AdjustSaturation(self):
+    def AdjustSaturation(self, value):
         if self.image:
             enhancer = ImageEnhance.Color(self.image)
-            self.image = enhancer.enhance(1.5)  # Increase saturation
+            self.image = enhancer.enhance(value)
             path = self.SaveImage()
             self.Show_image(path)
 
-    def ApplyBlur(self):
+    def ApplyBlur(self, value):
         if self.image:
-            self.image = self.image.filter(ImageFilter.BLUR)
+            self.image = self.image.filter(ImageFilter.GaussianBlur(value))
             path = self.SaveImage()
             self.Show_image(path)
 
-    def RotateImage(self):
+    def RotateImage(self, value):
         if self.image:
-            self.image = self.image.rotate(45, expand=True)
+            self.image = self.image.rotate(value, expand=True)
             path = self.SaveImage()
             self.Show_image(path)
 
-    def CropImage(self):
+    def CropImage(self, left, top, right, bottom):
         if self.image:
-            width, height = self.image.size
-            left = width / 4
-            top = height / 4
-            right = 3 * width / 4
-            bottom = 3 * height / 4
             self.image = self.image.crop((left, top, right, bottom))
             path = self.SaveImage()
             self.Show_image(path)
@@ -218,6 +217,12 @@ class Editor:
     def ConvertToGray(self):
         if self.image:
             self.image = self.image.convert("L")
+            path = self.SaveImage()
+            self.Show_image(path)
+
+    def Undo(self):
+        if self.original:
+            self.image = self.original.copy()
             path = self.SaveImage()
             self.Show_image(path)
 
@@ -231,17 +236,19 @@ main = Editor()
 
 btn_folder.clicked.connect(get_current_directory)
 file_list.currentRowChanged.connect(displayImage)
-btn_left.clicked.connect(main.RotateLeft)
-btn_right.clicked.connect(main.RotateRight)
-mirror.clicked.connect(main.MirrorImage)
-sharpness.clicked.connect(main.AdjustSharpness)
-brightness.clicked.connect(main.AdjustBrightness)
-contrast.clicked.connect(main.AdjustContrast)
-saturation.clicked.connect(main.AdjustSaturation)
-blur.clicked.connect(main.ApplyBlur)
-rotate.clicked.connect(main.RotateImage)
-crop.clicked.connect(main.CropImage)
-gray.clicked.connect(main.ConvertToGray)
+btn_left.clicked.connect(lambda: main.RotateLeft())
+btn_right.clicked.connect(lambda: main.RotateRight())
+mirror.clicked.connect(lambda: main.MirrorImage())
+sharpness.clicked.connect(lambda: main.AdjustSharpness(2.0))
+brightness.clicked.connect(lambda: main.AdjustBrightness(1.5))
+contrast.clicked.connect(lambda: main.AdjustContrast(1.5))
+saturation.clicked.connect(lambda: main.AdjustSaturation(1.5))
+blur.clicked.connect(lambda: main.ApplyBlur(2.0))
+rotate.clicked.connect(lambda: main.RotateImage(45))
+crop.clicked.connect(lambda: main.CropImage(100, 100, 400, 400))
+gray.clicked.connect(lambda: main.ConvertToGray())
+undo.clicked.connect(lambda: main.Undo())
+save.clicked.connect(lambda: main.SaveImage())
 
 main_window.show()
 App.exec_()
