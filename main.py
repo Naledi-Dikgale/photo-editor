@@ -48,7 +48,9 @@ filter_box.addItem("Rotate")
 filter_box.addItem("Crop")
 filter_box.addItem("Gray")
 
-picture_box = QLabel("Picture")
+# Labels for displaying images
+original_picture_box = QLabel("Original Picture")
+edited_picture_box = QLabel("Edited Picture")
 
 # Layout
 main_layout = QHBoxLayout()
@@ -77,9 +79,15 @@ top_right_layout.addWidget(crop, 3, 1)
 top_right_layout.addWidget(gray, 3, 2)
 top_right_layout.addWidget(filter_slider, 4, 0, 1, 4)
 
+
 # Bottom part of the right side
 bottom_right_layout = QVBoxLayout()
-bottom_right_layout.addWidget(picture_box)
+image_layout = QHBoxLayout()
+image_layout.addWidget(original_picture_box)
+image_layout.addWidget(edited_picture_box)
+bottom_right_layout.addLayout(image_layout)
+
+# Move bottom buttons layout here
 bottom_buttons_layout = QHBoxLayout()
 bottom_buttons_layout.addWidget(undo)
 bottom_buttons_layout.addWidget(save)
@@ -183,13 +191,18 @@ class Editor:
         return fullname
 
     def Show_image(self, path):
-        picture_box.hide()
-        image = QPixmap(path)
-        w, h = picture_box.width(), picture_box.height()
-        image = image.scaled(w, h, Qt.KeepAspectRatio)
-        picture_box.setPixmap(image)
-        picture_box.show()
-        print(f"Displayed image: {path}")
+        original_picture_box.hide()
+        edited_picture_box.hide()
+        original_image = QPixmap(os.path.join(working_directory, self.filename))
+        edited_image = QPixmap(path)
+        w, h = original_picture_box.width(), original_picture_box.height()
+        original_image = original_image.scaled(w, h, Qt.KeepAspectRatio)
+        edited_image = edited_image.scaled(w, h, Qt.KeepAspectRatio)
+        original_picture_box.setPixmap(original_image)
+        edited_picture_box.setPixmap(edited_image)
+        original_picture_box.show()
+        edited_picture_box.show()
+        print(f"Displayed images: original - {os.path.join(working_directory, self.filename)}, edited - {path}")
 
     def RotateLeft(self):
         if self.image:
@@ -279,6 +292,25 @@ class Editor:
             path = self.SaveImage()
             self.Show_image(path)
 
+    def transformImage(self, action):
+        actions = {
+            "RotateLeft": self.RotateLeft,
+            "RotateRight": self.RotateRight,
+            "MirrorImage": self.MirrorImage,
+            "AdjustSharpness": lambda: self.AdjustSharpness(filter_slider.value()),
+            "AdjustBrightness": lambda: self.AdjustBrightness(filter_slider.value()),
+            "AdjustContrast": lambda: self.AdjustContrast(filter_slider.value()),
+            "AdjustSaturation": lambda: self.AdjustSaturation(filter_slider.value()),
+            "ApplyBlur": lambda: self.ApplyBlur(filter_slider.value()),
+            "RotateImage": lambda: self.RotateImage(filter_slider.value() * 10),
+            "CropImage": lambda: self.CropImage(100, 100, 400, 400),
+            "ConvertToGray": self.ConvertToGray,
+            "Undo": self.Undo,
+            "SaveImage": self.SaveImage
+        }
+        if action in actions:
+            actions[action]()
+
 def displayImage():
     if file_list.currentRow() >= 0:
         filename = file_list.currentItem().text()
@@ -289,19 +321,19 @@ main = Editor()
 
 btn_folder.clicked.connect(get_current_directory)
 file_list.currentRowChanged.connect(displayImage)
-btn_left.clicked.connect(lambda: main.RotateLeft())
-btn_right.clicked.connect(lambda: main.RotateRight())
-mirror.clicked.connect(lambda: main.MirrorImage())
-sharpness.clicked.connect(lambda: main.AdjustSharpness(filter_slider.value()))
-brightness.clicked.connect(lambda: main.AdjustBrightness(filter_slider.value()))
-contrast.clicked.connect(lambda: main.AdjustContrast(filter_slider.value()))
-saturation.clicked.connect(lambda: main.AdjustSaturation(filter_slider.value()))
-blur.clicked.connect(lambda: main.ApplyBlur(filter_slider.value()))
-rotate.clicked.connect(lambda: main.RotateImage(filter_slider.value() * 10))
-crop.clicked.connect(lambda: main.CropImage(100, 100, 400, 400))
-gray.clicked.connect(lambda: main.ConvertToGray())
-undo.clicked.connect(lambda: main.Undo())
-save.clicked.connect(lambda: main.SaveImage())
+btn_left.clicked.connect(lambda: main.transformImage("RotateLeft"))
+btn_right.clicked.connect(lambda: main.transformImage("RotateRight"))
+mirror.clicked.connect(lambda: main.transformImage("MirrorImage"))
+sharpness.clicked.connect(lambda: main.transformImage("AdjustSharpness"))
+brightness.clicked.connect(lambda: main.transformImage("AdjustBrightness"))
+contrast.clicked.connect(lambda: main.transformImage("AdjustContrast"))
+saturation.clicked.connect(lambda: main.transformImage("AdjustSaturation"))
+blur.clicked.connect(lambda: main.transformImage("ApplyBlur"))
+rotate.clicked.connect(lambda: main.transformImage("RotateImage"))
+crop.clicked.connect(lambda: main.transformImage("CropImage"))
+gray.clicked.connect(lambda: main.transformImage("ConvertToGray"))
+undo.clicked.connect(lambda: main.transformImage("Undo"))
+save.clicked.connect(lambda: main.transformImage("SaveImage"))
 
 main_window.show()
 App.exec_()
