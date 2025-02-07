@@ -27,7 +27,7 @@ gray = QPushButton("Black and White")
 undo = QPushButton("Undo")
 save = QPushButton("Save")
 
-# Slider for adjusting filter values
+# Slider
 filter_slider = QSlider(Qt.Horizontal)
 filter_slider.setMinimum(1)
 filter_slider.setMaximum(10)
@@ -48,22 +48,18 @@ filter_box.addItem("Rotate")
 filter_box.addItem("Crop")
 filter_box.addItem("Gray")
 
-# Labels for displaying images
 original_picture_box = QLabel("Original Picture")
 edited_picture_box = QLabel("Edited Picture")
 
 # Layout
 main_layout = QHBoxLayout()
 
-# Left side layout
 left_layout = QVBoxLayout()
 left_layout.addWidget(btn_folder)
 left_layout.addWidget(file_list)
 
-# Right side layout
 right_layout = QVBoxLayout()
 
-# Top part of the right side
 top_right_layout = QGridLayout()
 top_right_layout.addWidget(filter_box, 0, 0, 1, 4)
 top_right_layout.addWidget(btn_left, 1, 0)
@@ -80,24 +76,20 @@ top_right_layout.addWidget(gray, 3, 2)
 top_right_layout.addWidget(filter_slider, 4, 0, 1, 4)
 
 
-# Bottom part of the right side
 bottom_right_layout = QVBoxLayout()
 image_layout = QHBoxLayout()
 image_layout.addWidget(original_picture_box)
 image_layout.addWidget(edited_picture_box)
 bottom_right_layout.addLayout(image_layout)
 
-# Move bottom buttons layout here
 bottom_buttons_layout = QHBoxLayout()
 bottom_buttons_layout.addWidget(undo)
 bottom_buttons_layout.addWidget(save)
 bottom_right_layout.addLayout(bottom_buttons_layout)
 
-# Combine top and bottom right layouts
 right_layout.addLayout(top_right_layout)
 right_layout.addLayout(bottom_right_layout)
 
-# Combine left and right layouts
 main_layout.addLayout(left_layout, 1)
 main_layout.addLayout(right_layout, 4)
 
@@ -153,7 +145,7 @@ def filter(files, extensions):
                 results.append(file)
     return results
 
-# get current directory
+# current directory
 def get_current_directory():
     global working_directory
     working_directory = QFileDialog.getExistingDirectory()
