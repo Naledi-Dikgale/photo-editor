@@ -1,0 +1,35 @@
+QWidget {
+    background-color: #f0f0f0;
+    color: #333;
+}
+QPushButton {
+    background-color: #007bff;
+    color: white;
+    border: 1px solid #007bff;
+    border-radius: 5px;
+    padding: 5px 10px;
+    min-width: 100px;
+    min-height: 40px;
+}
+QPushButton:hover {
+    background-color: #0056b3;
+}
+QListWidget {
+    background-color: white;
+    color: #333;
+    border: 1px solid #ccc;
+}
+QComboBox {
+    background-color: white;
+    color: #333;
+    border: 1px solid #ccc;
+}
+QLabel {
+    background-color: white;
+    color: #333;
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+QSlider {
+    background-color: #f0f0f0;
+}
