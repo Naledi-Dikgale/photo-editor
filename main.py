@@ -17,8 +17,6 @@ with open("styles.qss", "r") as file:
 btn_folder = QPushButton("Folder")
 file_list = QListWidget()
 
-# btn_left = QPushButton("Left")
-# btn_right = QPushButton("Right")
 mirror = QPushButton("Mirror")
 sharpness = QPushButton("Sharpness")
 brightness = QPushButton("Brightness")
@@ -26,22 +24,15 @@ contrast = QPushButton("Contrast")
 saturation = QPushButton("Saturation")
 blur = QPushButton("Blur")
 rotate = QPushButton("Rotate")
-# crop = QPushButton("Crop")
-gray = QPushButton("Black and White")
+gray = QPushButton("Gray")
+blue = QPushButton("Blue")
 undo = QPushButton("Undo")
 save = QPushButton("Save")
 
-# # Slider
-# filter_slider = QSlider(Qt.Horizontal)
-# filter_slider.setMinimum(1)
-# filter_slider.setMaximum(10)
-# filter_slider.setValue(5)
 
 # Dropdown menu
 filter_box = QComboBox()
 filter_box.addItem("Original")
-# filter_box.addItem("Left")
-# filter_box.addItem("Right")
 filter_box.addItem("Mirror")
 filter_box.addItem("Sharpness")
 filter_box.addItem("Brightness")
@@ -49,8 +40,8 @@ filter_box.addItem("Contrast")
 filter_box.addItem("Saturation")
 filter_box.addItem("Blur")
 filter_box.addItem("Rotate")
-# filter_box.addItem("Crop")
 filter_box.addItem("Gray")
+filter_box.addItem("Blue")
 
 original_picture_box = QLabel("Original Picture")
 edited_picture_box = QLabel("Edited Picture")
@@ -66,8 +57,6 @@ right_layout = QVBoxLayout()
 
 top_right_layout = QGridLayout()
 top_right_layout.addWidget(filter_box, 0, 0, 1, 4)
-# top_right_layout.addWidget(btn_left, 1, 0)
-# top_right_layout.addWidget(btn_right, 1, 1)
 top_right_layout.addWidget(mirror, 1, 0)
 top_right_layout.addWidget(sharpness, 1, 1)
 top_right_layout.addWidget(brightness, 1, 2)
@@ -75,9 +64,8 @@ top_right_layout.addWidget(contrast, 1, 3)
 top_right_layout.addWidget(saturation, 2, 0)
 top_right_layout.addWidget(blur, 2, 1)
 top_right_layout.addWidget(rotate, 2, 2)
-# top_right_layout.addWidget(crop, 3, 1)
 top_right_layout.addWidget(gray, 2, 3)
-# top_right_layout.addWidget(filter_slider, 4, 0, 1, 4)
+top_right_layout.addWidget(blue, 3, 0)
 
 bottom_right_layout = QVBoxLayout()
 image_layout = QHBoxLayout()
@@ -118,7 +106,6 @@ def get_current_directory():
     print(f"Selected directory: {working_directory}") 
     extensions = [".jpg", ".jpeg", ".png", ".gif", ".svg"]
     filenames = filter(os.listdir(working_directory), extensions)
-    print(f"Filtered filenames: {filenames}") #debug
     file_list.clear()
     for file in filenames:
         file_list.addItem(file)
@@ -229,16 +216,18 @@ class Editor:
             path = self.SaveImage()
             self.Show_image(path)
 
-    # def CropImage(self, left, top, right, bottom):
-    #     if self.image:
-    #         self.image = self.image.crop((left, top, right, bottom))
-    #         history.append(self.image.copy())
-    #         path = self.SaveImage()
-    #         self.Show_image(path)
-
     def ConvertToGray(self):
         if self.image:
             self.image = self.image.convert("L")
+            history.append(self.image.copy())
+            path = self.SaveImage()
+            self.Show_image(path)
+
+    def ConvertToBlue(self):
+        if self.image:
+            self.image = self.image.convert("RGB")
+            r, g, b = self.image.split()
+            self.image = Image.merge("RGB", (b, g, r))
             history.append(self.image.copy())
             path = self.SaveImage()
             self.Show_image(path)
@@ -252,8 +241,6 @@ class Editor:
 
     def transformImage(self, action):
         actions = {
-            # "RotateLeft": self.RotateLeft,
-            # "RotateRight": self.RotateRight,
             "MirrorImage": self.MirrorImage,
             "AdjustSharpness": lambda: self.AdjustSharpness(5),
             "AdjustBrightness": lambda: self.AdjustBrightness(3),
@@ -261,8 +248,8 @@ class Editor:
             "AdjustSaturation": lambda: self.AdjustSaturation(5),
             "ApplyBlur": lambda: self.ApplyBlur(4),
             "RotateImage": lambda: self.RotateImage(90),
-            # "CropImage": lambda: self.CropImage(100, 100, 400, 400),
             "ConvertToGray": self.ConvertToGray,
+            "ConvertToBlue": self.ConvertToBlue,
             "Undo": self.Undo,
             "SaveImage": self.SaveImage
         }
@@ -279,8 +266,6 @@ main = Editor()
 
 btn_folder.clicked.connect(get_current_directory)
 file_list.currentRowChanged.connect(displayImage)
-# btn_left.clicked.connect(lambda: main.transformImage("RotateLeft"))
-# btn_right.clicked.connect(lambda: main.transformImage("RotateRight"))
 mirror.clicked.connect(lambda: main.transformImage("MirrorImage"))
 sharpness.clicked.connect(lambda: main.transformImage("AdjustSharpness"))
 brightness.clicked.connect(lambda: main.transformImage("AdjustBrightness"))
@@ -288,8 +273,8 @@ contrast.clicked.connect(lambda: main.transformImage("AdjustContrast"))
 saturation.clicked.connect(lambda: main.transformImage("AdjustSaturation"))
 blur.clicked.connect(lambda: main.transformImage("ApplyBlur"))
 rotate.clicked.connect(lambda: main.transformImage("RotateImage"))
-# crop.clicked.connect(lambda: main.transformImage("CropImage"))
 gray.clicked.connect(lambda: main.transformImage("ConvertToGray"))
+blue.clicked.connect(lambda: main.transformImage("ConvertToBlue"))
 undo.clicked.connect(lambda: main.transformImage("Undo"))
 save.clicked.connect(lambda: main.transformImage("SaveImage"))
 
