@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QListWidget, QComboBox, QVBoxLayout, QHBoxLayout, QFileDialog, QGridLayout, QSlider, QInputDialog
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSize
 import os
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QIcon
 from PIL import Image, ImageEnhance, ImageFilter
 
 App = QApplication([])
@@ -14,21 +14,67 @@ with open("styles.qss", "r") as file:
     App.setStyleSheet(file.read())
 
 # Add widgets
-btn_folder = QPushButton("Folder")
+btn_folder = QPushButton()
+btn_folder.setIcon(QIcon("icons/folder.svg"))
+btn_folder.setIconSize(QSize(24, 24))
+btn_folder.setFixedSize(32, 32)
+
 file_list = QListWidget()
 
-mirror = QPushButton("Mirror")
-sharpness = QPushButton("Sharpness")
-brightness = QPushButton("Brightness")
-contrast = QPushButton("Contrast")
-saturation = QPushButton("Saturation")
-blur = QPushButton("Blur")
-rotate = QPushButton("Rotate")
-gray = QPushButton("Gray")
-blue = QPushButton("Blue")
-undo = QPushButton("Undo")
-save = QPushButton("Save")
+mirror = QPushButton()
+mirror.setIcon(QIcon("icons/mirror.svg"))
+mirror.setIconSize(QSize(24, 24))
+mirror.setFixedSize(32, 32)
 
+sharpness = QPushButton()
+sharpness.setIcon(QIcon("icons/sharpness.svg"))
+sharpness.setIconSize(QSize(24, 24))
+sharpness.setFixedSize(32, 32)
+
+brightness = QPushButton()
+brightness.setIcon(QIcon("icons/brightness.svg"))
+brightness.setIconSize(QSize(24, 24))
+brightness.setFixedSize(32, 32)
+
+contrast = QPushButton()
+contrast.setIcon(QIcon("icons/contrast.svg"))
+contrast.setIconSize(QSize(24, 24))
+contrast.setFixedSize(32, 32)
+
+saturation = QPushButton()
+saturation.setIcon(QIcon("icons/saturation.svg"))
+saturation.setIconSize(QSize(24, 24))
+saturation.setFixedSize(32, 32)
+
+blur = QPushButton()
+blur.setIcon(QIcon("icons/image.svg"))
+blur.setIconSize(QSize(24, 24))
+blur.setFixedSize(32, 32)
+
+rotate = QPushButton()
+rotate.setIcon(QIcon("icons/rotate.svg"))
+rotate.setIconSize(QSize(24, 24))
+rotate.setFixedSize(32, 32)
+
+gray = QPushButton()
+gray.setIcon(QIcon("icons/paint.svg"))
+gray.setIconSize(QSize(24, 24))
+gray.setFixedSize(32, 32)
+
+blue = QPushButton()
+blue.setIcon(QIcon("icons/paint.svg"))
+blue.setIconSize(QSize(24, 24))
+blue.setFixedSize(32, 32)
+
+undo = QPushButton()
+undo.setIcon(QIcon("icons/undo.svg"))
+undo.setIconSize(QSize(24, 24))
+undo.setFixedSize(32, 32)
+
+save = QPushButton()
+save.setIcon(QIcon("icons/save.svg"))
+save.setIconSize(QSize(24, 24))
+save.setFixedSize(32, 32)
 
 # Dropdown menu
 filter_box = QComboBox()
