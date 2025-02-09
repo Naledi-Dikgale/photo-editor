@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QListWidget, QComboBox, QVBoxLayout, QHBoxLayout, QFileDialog, QGridLayout, QSlider, QInputDialog
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QListWidget, QComboBox, QVBoxLayout, QHBoxLayout, QFileDialog, QGridLayout, QSlider, QInputDialog, QSplitter
+from PyQt5.QtCore import Qt, QSize, QEvent
 import os
 from PyQt5.QtGui import QPixmap, QIcon
 from PIL import Image, ImageEnhance, ImageFilter
@@ -21,60 +21,28 @@ btn_folder.setFixedSize(32, 32)
 
 file_list = QListWidget()
 
-mirror = QPushButton()
-mirror.setIcon(QIcon("icons/mirror.svg"))
-mirror.setIconSize(QSize(24, 24))
-mirror.setFixedSize(32, 32)
+buttons = [
+    {"name": "mirror", "icon": "icons/mirror.svg"},
+    {"name": "sharpness", "icon": "icons/sharpness.svg"},
+    {"name": "brightness", "icon": "icons/brightness.svg"},
+    {"name": "contrast", "icon": "icons/contrast.svg"},
+    {"name": "saturation", "icon": "icons/saturation.svg"},
+    {"name": "blur", "icon": "icons/image.svg"},
+    {"name": "rotate", "icon": "icons/rotate.svg"},
+    {"name": "gray", "icon": "icons/paint.svg"},
+    {"name": "blue", "icon": "icons/paint.svg"},
+    {"name": "undo", "icon": "icons/undo.svg"},
+    {"name": "save", "icon": "icons/save.svg"}
+]
 
-sharpness = QPushButton()
-sharpness.setIcon(QIcon("icons/sharpness.svg"))
-sharpness.setIconSize(QSize(24, 24))
-sharpness.setFixedSize(32, 32)
+button_widgets = []
 
-brightness = QPushButton()
-brightness.setIcon(QIcon("icons/brightness.svg"))
-brightness.setIconSize(QSize(24, 24))
-brightness.setFixedSize(32, 32)
-
-contrast = QPushButton()
-contrast.setIcon(QIcon("icons/contrast.svg"))
-contrast.setIconSize(QSize(24, 24))
-contrast.setFixedSize(32, 32)
-
-saturation = QPushButton()
-saturation.setIcon(QIcon("icons/saturation.svg"))
-saturation.setIconSize(QSize(24, 24))
-saturation.setFixedSize(32, 32)
-
-blur = QPushButton()
-blur.setIcon(QIcon("icons/image.svg"))
-blur.setIconSize(QSize(24, 24))
-blur.setFixedSize(32, 32)
-
-rotate = QPushButton()
-rotate.setIcon(QIcon("icons/rotate.svg"))
-rotate.setIconSize(QSize(24, 24))
-rotate.setFixedSize(32, 32)
-
-gray = QPushButton()
-gray.setIcon(QIcon("icons/paint.svg"))
-gray.setIconSize(QSize(24, 24))
-gray.setFixedSize(32, 32)
-
-blue = QPushButton()
-blue.setIcon(QIcon("icons/paint.svg"))
-blue.setIconSize(QSize(24, 24))
-blue.setFixedSize(32, 32)
-
-undo = QPushButton()
-undo.setIcon(QIcon("icons/undo.svg"))
-undo.setIconSize(QSize(24, 24))
-undo.setFixedSize(32, 32)
-
-save = QPushButton()
-save.setIcon(QIcon("icons/save.svg"))
-save.setIconSize(QSize(24, 24))
-save.setFixedSize(32, 32)
+for button in buttons:
+    btn = QPushButton()
+    btn.setIcon(QIcon(button["icon"]))
+    btn.setIconSize(QSize(24, 24))
+    btn.setFixedSize(32, 32)
+    button_widgets.append(btn)
 
 # Dropdown menu
 filter_box = QComboBox()
@@ -103,15 +71,6 @@ right_layout = QVBoxLayout()
 
 top_right_layout = QGridLayout()
 top_right_layout.addWidget(filter_box, 0, 0, 1, 4)
-top_right_layout.addWidget(mirror, 1, 0)
-top_right_layout.addWidget(sharpness, 1, 1)
-top_right_layout.addWidget(brightness, 1, 2)
-top_right_layout.addWidget(contrast, 1, 3)
-top_right_layout.addWidget(saturation, 2, 0)
-top_right_layout.addWidget(blur, 2, 1)
-top_right_layout.addWidget(rotate, 2, 2)
-top_right_layout.addWidget(gray, 2, 3)
-top_right_layout.addWidget(blue, 3, 0)
 
 bottom_right_layout = QVBoxLayout()
 image_layout = QHBoxLayout()
@@ -120,15 +79,24 @@ image_layout.addWidget(edited_picture_box)
 bottom_right_layout.addLayout(image_layout)
 
 bottom_buttons_layout = QHBoxLayout()
-bottom_buttons_layout.addWidget(undo)
-bottom_buttons_layout.addWidget(save)
+bottom_buttons_layout.addWidget(button_widgets[-2])  # undo button
+bottom_buttons_layout.addWidget(button_widgets[-1])  # save button
 bottom_right_layout.addLayout(bottom_buttons_layout)
 
 right_layout.addLayout(top_right_layout)
 right_layout.addLayout(bottom_right_layout)
 
-main_layout.addLayout(left_layout, 1)
-main_layout.addLayout(right_layout, 4)
+# Use QSplitter to divide the left and right layouts
+splitter = QSplitter(Qt.Horizontal)
+left_widget = QWidget()
+left_widget.setLayout(left_layout)
+right_widget = QWidget()
+right_widget.setLayout(right_layout)
+splitter.addWidget(left_widget)
+splitter.addWidget(right_widget)
+splitter.setSizes([160, 640])  # Set initial sizes (20% and 80%)
+
+main_layout.addWidget(splitter)
 
 main_window.setLayout(main_layout)
 
@@ -312,17 +280,28 @@ main = Editor()
 
 btn_folder.clicked.connect(get_current_directory)
 file_list.currentRowChanged.connect(displayImage)
-mirror.clicked.connect(lambda: main.transformImage("MirrorImage"))
-sharpness.clicked.connect(lambda: main.transformImage("AdjustSharpness"))
-brightness.clicked.connect(lambda: main.transformImage("AdjustBrightness"))
-contrast.clicked.connect(lambda: main.transformImage("AdjustContrast"))
-saturation.clicked.connect(lambda: main.transformImage("AdjustSaturation"))
-blur.clicked.connect(lambda: main.transformImage("ApplyBlur"))
-rotate.clicked.connect(lambda: main.transformImage("RotateImage"))
-gray.clicked.connect(lambda: main.transformImage("ConvertToGray"))
-blue.clicked.connect(lambda: main.transformImage("ConvertToBlue"))
-undo.clicked.connect(lambda: main.transformImage("Undo"))
-save.clicked.connect(lambda: main.transformImage("SaveImage"))
+button_widgets[0].clicked.connect(lambda: main.transformImage("MirrorImage"))
+button_widgets[1].clicked.connect(lambda: main.transformImage("AdjustSharpness"))
+button_widgets[2].clicked.connect(lambda: main.transformImage("AdjustBrightness"))
+button_widgets[3].clicked.connect(lambda: main.transformImage("AdjustContrast"))
+button_widgets[4].clicked.connect(lambda: main.transformImage("AdjustSaturation"))
+button_widgets[5].clicked.connect(lambda: main.transformImage("ApplyBlur"))
+button_widgets[6].clicked.connect(lambda: main.transformImage("RotateImage"))
+button_widgets[7].clicked.connect(lambda: main.transformImage("ConvertToGray"))
+button_widgets[8].clicked.connect(lambda: main.transformImage("ConvertToBlue"))
+button_widgets[9].clicked.connect(lambda: main.transformImage("Undo"))
+button_widgets[10].clicked.connect(lambda: main.transformImage("SaveImage"))
+
+def resizeEvent(event):
+    available_width = main_window.width()
+    button_width = button_widgets[0].width()
+    columns = available_width // button_width
+    for i, btn in enumerate(button_widgets[:-2]):  # Exclude undo and save buttons
+        row = i // columns
+        col = i % columns
+        top_right_layout.addWidget(btn, row + 1, col)
+
+main_window.resizeEvent = resizeEvent
 
 main_window.show()
 App.exec_()
