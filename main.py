@@ -1,8 +1,16 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QListWidget, QComboBox, QVBoxLayout, QHBoxLayout, QFileDialog, QGridLayout, QSlider, QInputDialog, QSplitter
 from PyQt5.QtCore import Qt, QSize, QEvent
 import os
-from PyQt5.QtGui import QPixmap, QIcon
+from PyQt5.QtGui import QPixmap, QIcon, QPainter, QColor
 from PIL import Image, ImageEnhance, ImageFilter
+
+def colorize_icon(icon_path, color):
+    pixmap = QPixmap(icon_path)
+    painter = QPainter(pixmap)
+    painter.setCompositionMode(QPainter.CompositionMode_SourceIn)
+    painter.fillRect(pixmap.rect(), QColor(color))
+    painter.end()
+    return QIcon(pixmap)
 
 App = QApplication([])
 main_window = QWidget()
@@ -15,7 +23,7 @@ with open("styles.qss", "r") as file:
 
 # Add widgets
 btn_folder = QPushButton()
-btn_folder.setIcon(QIcon("icons/folder.svg"))
+btn_folder.setIcon(colorize_icon("icons/folder.svg", "pink"))
 btn_folder.setIconSize(QSize(24, 24))
 btn_folder.setFixedSize(32, 32)
 
@@ -41,7 +49,7 @@ for button in buttons:
     btn_layout = QVBoxLayout()
     btn_widget = QWidget()
     btn = QPushButton()
-    btn.setIcon(QIcon(button["icon"]))
+    btn.setIcon(colorize_icon(button["icon"], "pink"))
     btn.setIconSize(QSize(24, 24))
     btn.setFixedSize(32, 32)
     label = QLabel(button["name"])
