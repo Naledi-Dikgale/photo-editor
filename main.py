@@ -38,11 +38,18 @@ buttons = [
 button_widgets = []
 
 for button in buttons:
+    btn_layout = QVBoxLayout()
+    btn_widget = QWidget()
     btn = QPushButton()
     btn.setIcon(QIcon(button["icon"]))
     btn.setIconSize(QSize(24, 24))
     btn.setFixedSize(32, 32)
-    button_widgets.append(btn)
+    label = QLabel(button["name"])
+    label.setAlignment(Qt.AlignCenter)
+    btn_layout.addWidget(btn)
+    btn_layout.addWidget(label)
+    btn_widget.setLayout(btn_layout)
+    button_widgets.append(btn_widget)
 
 # Dropdown menu
 filter_box = QComboBox()
@@ -79,14 +86,18 @@ image_layout.addWidget(edited_picture_box)
 bottom_right_layout.addLayout(image_layout)
 
 bottom_buttons_layout = QHBoxLayout()
-bottom_buttons_layout.addWidget(button_widgets[-2])  # undo button
-bottom_buttons_layout.addWidget(button_widgets[-1])  # save button
+bottom_buttons_layout.addWidget(button_widgets[-2])
+bottom_buttons_layout.addWidget(button_widgets[-1])  
 bottom_right_layout.addLayout(bottom_buttons_layout)
 
 right_layout.addLayout(top_right_layout)
 right_layout.addLayout(bottom_right_layout)
 
-# Use QSplitter to divide the left and right layouts
+# Add button widgets
+for btn_widget in button_widgets[:-2]:  
+    top_right_layout.addWidget(btn_widget)
+
+# Divide the left and right sides
 splitter = QSplitter(Qt.Horizontal)
 left_widget = QWidget()
 left_widget.setLayout(left_layout)
@@ -94,7 +105,7 @@ right_widget = QWidget()
 right_widget.setLayout(right_layout)
 splitter.addWidget(left_widget)
 splitter.addWidget(right_widget)
-splitter.setSizes([160, 640])  # Set initial sizes (20% and 80%)
+splitter.setSizes([160, 640])
 
 main_layout.addWidget(splitter)
 
@@ -280,23 +291,23 @@ main = Editor()
 
 btn_folder.clicked.connect(get_current_directory)
 file_list.currentRowChanged.connect(displayImage)
-button_widgets[0].clicked.connect(lambda: main.transformImage("MirrorImage"))
-button_widgets[1].clicked.connect(lambda: main.transformImage("AdjustSharpness"))
-button_widgets[2].clicked.connect(lambda: main.transformImage("AdjustBrightness"))
-button_widgets[3].clicked.connect(lambda: main.transformImage("AdjustContrast"))
-button_widgets[4].clicked.connect(lambda: main.transformImage("AdjustSaturation"))
-button_widgets[5].clicked.connect(lambda: main.transformImage("ApplyBlur"))
-button_widgets[6].clicked.connect(lambda: main.transformImage("RotateImage"))
-button_widgets[7].clicked.connect(lambda: main.transformImage("ConvertToGray"))
-button_widgets[8].clicked.connect(lambda: main.transformImage("ConvertToBlue"))
-button_widgets[9].clicked.connect(lambda: main.transformImage("Undo"))
-button_widgets[10].clicked.connect(lambda: main.transformImage("SaveImage"))
+button_widgets[0].findChild(QPushButton).clicked.connect(lambda: main.transformImage("MirrorImage"))
+button_widgets[1].findChild(QPushButton).clicked.connect(lambda: main.transformImage("AdjustSharpness"))
+button_widgets[2].findChild(QPushButton).clicked.connect(lambda: main.transformImage("AdjustBrightness"))
+button_widgets[3].findChild(QPushButton).clicked.connect(lambda: main.transformImage("AdjustContrast"))
+button_widgets[4].findChild(QPushButton).clicked.connect(lambda: main.transformImage("AdjustSaturation"))
+button_widgets[5].findChild(QPushButton).clicked.connect(lambda: main.transformImage("ApplyBlur"))
+button_widgets[6].findChild(QPushButton).clicked.connect(lambda: main.transformImage("RotateImage"))
+button_widgets[7].findChild(QPushButton).clicked.connect(lambda: main.transformImage("ConvertToGray"))
+button_widgets[8].findChild(QPushButton).clicked.connect(lambda: main.transformImage("ConvertToBlue"))
+button_widgets[9].findChild(QPushButton).clicked.connect(lambda: main.transformImage("Undo"))
+button_widgets[10].findChild(QPushButton).clicked.connect(lambda: main.transformImage("SaveImage"))
 
 def resizeEvent(event):
     available_width = main_window.width()
     button_width = button_widgets[0].width()
     columns = available_width // button_width
-    for i, btn in enumerate(button_widgets[:-2]):  # Exclude undo and save buttons
+    for i, btn in enumerate(button_widgets[:-2]): 
         row = i // columns
         col = i % columns
         top_right_layout.addWidget(btn, row + 1, col)
