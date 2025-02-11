@@ -49,6 +49,7 @@ for button in buttons:
     btn_layout = QVBoxLayout()
     btn_layout.setContentsMargins(0, 0, 0, 0)
     btn_layout.setSpacing(0)
+    btn_layout.setAlignment(Qt.AlignCenter)
     btn_widget = QWidget()
     btn = QPushButton()
     btn.setIcon(colorize_icon(button["icon"], "pink"))
