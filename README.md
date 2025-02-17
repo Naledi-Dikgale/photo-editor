@@ -98,7 +98,7 @@ No automated tests are currently implemented.
 
 - GitHub: [@githubhandle](https://github.com/Naledi-Dikgale)
 - LinkedIn: [LinkedIn](https://www.linkedin.com/in/naledi-dikgale)
-- Website: https://nalediportfoliov3.netlify.app/
+- Website: [Website](https://nalediportfoliov3.netlify.app/)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
