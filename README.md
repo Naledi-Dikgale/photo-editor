@@ -27,6 +27,9 @@
 
 # 📚 Photo Editor <a name="about-project"></a>
 
+
+![Captur](https://github.com/user-attachments/assets/41fd45ea-b2b0-453a-a94a-eecab3845ba1)
+
 **Photo Editor** A simple image editing application built using PyQt5. It provides essential features such as opening images, applying basic edits, and saving changes.
 
 ## 🛠️ Built With <a name="built-with">Python (PyQt5)</a>
