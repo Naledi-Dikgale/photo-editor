@@ -15,17 +15,17 @@ def colorize_icon(icon_path, color):
 App = QApplication([])
 main_window = QWidget()
 main_window.setWindowTitle("Photo Editor")
-main_window.resize(800, 600)
+main_window.resize(800, 500)
 
 # Load QSS file
 with open("styles.qss", "r") as file:
     App.setStyleSheet(file.read())
 
 # Add widgets
-btn_folder = QPushButton()
-btn_folder.setIcon(colorize_icon("icons/folder.svg", "pink"))
+btn_folder = QPushButton("Browse Images")
+btn_folder.setIcon(colorize_icon("icons/folder.svg", "#0d4e49"))
 btn_folder.setIconSize(QSize(24, 24))
-btn_folder.setFixedSize(32, 32)
+btn_folder.setFixedSize(120, 32)
 
 file_list = QListWidget()
 
@@ -52,7 +52,7 @@ for button in buttons:
     btn_layout.setAlignment(Qt.AlignCenter)
     btn_widget = QWidget()
     btn = QPushButton()
-    btn.setIcon(colorize_icon(button["icon"], "pink"))
+    btn.setIcon(colorize_icon(button["icon"], "#0d4e49"))
     btn.setIconSize(QSize(24, 24))
     btn.setFixedSize(32, 32)
     label = QLabel(button["name"])
